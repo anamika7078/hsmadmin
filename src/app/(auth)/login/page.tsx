@@ -25,7 +25,6 @@ export default function LoginPage() {
   const [mobile, setMobile] = React.useState("");
   const [message, setMessage] = React.useState<string | null>(null);
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
-  const [devOtp, setDevOtp] = React.useState<string | null>(null);
 
   const {
     register,
@@ -48,17 +47,11 @@ export default function LoginPage() {
     setLoading(true);
     setErrorMsg(null);
     setMessage(null);
-    setDevOtp(null);
     try {
-      const response = await authApi.sendOTP(data.mobile);
+      await authApi.sendOTP(data.mobile);
       setMobile(data.mobile);
       setOtpSent(true);
       setMessage("OTP sent successfully");
-      if (response?.data?.otp) {
-        setDevOtp(response.data.otp);
-        setOtpValue("otp", response.data.otp);
-        window.alert(`Development OTP: ${response.data.otp}`);
-      }
     } catch (error) {
       setErrorMsg("Could not send OTP. Please verify mobile number.");
     } finally {
@@ -140,16 +133,6 @@ export default function LoginPage() {
                 </div>
                 {otpErrors.otp && <p className="mt-1 text-xs text-red-500 ml-1">{otpErrors.otp.message}</p>}
                 <p className="mt-2 text-xs text-slate-500">OTP sent to {mobile}</p>
-                {devOtp && (
-                  <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3">
-                    <p className="text-xs font-semibold text-emerald-700">
-                      Development OTP: {devOtp}
-                    </p>
-                    <p className="text-[11px] text-emerald-600">
-                      Auto-filled for quick login in development mode.
-                    </p>
-                  </div>
-                )}
               </div>
               {errorMsg && <p className="text-xs text-red-500">{errorMsg}</p>}
               <button
